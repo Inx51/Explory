@@ -1,0 +1,101 @@
+﻿@page
+@using System.Net
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+<div>
+    @if (!string.IsNullOrEmpty(Model.ParentLink))
+    {
+        var fullPath = WebUtility.UrlDecode(Model.FullPath.Replace("\\", "\\\\"));
+        <p><b>Current location:</b> <a class="btn btn-primary" onclick="navigator.clipboard.writeText('@fullPath')">@fullPath</a></p>
+        <a class="badge text-bg-info" href="@Model.ParentLink">..go to parent folder</a>
+    }
+</div>
+
+@if (Model.Directories.Any())
+{
+    <h1><span class="badge bg-secondary">Folders</span></h1>
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>#</th>
+            <th>Folder Name</th>
+            <th>Creation Time</th>
+            <th>Last Write Time</th>
+            <th>Last Access Time</th>
+            <th>Path</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            var count = 1;
+            foreach (var dir in Model.Directories)
+            {
+                var path = $"{Model.Path}/{dir.Name}".Replace("//", "/");
+                var displayPath = dir.FullName;
+                if (displayPath.Length > 50)
+                    displayPath = displayPath[..50] + "..";
+                <tr>
+                    <td></td>
+                    <td><a href="@path">@count</a></td>
+                    <td><a href="@path">@dir.Name</a></td>
+                    <td>@dir.CreationTime</td>
+                    <td>@dir.LastWriteTime</td>
+                    <td>@dir.LastAccessTime</td>
+                    <td><a class="btn btn-primary" onclick="navigator.clipboard.writeText('@dir.FullName.Replace("\\", "\\\\")')">@displayPath</a></td>
+                </tr>
+                count++;
+            }
+        }
+        </tbody>
+    </table>
+}
+
+@if (Model.Files.Any())
+{
+    <h1><span class="badge bg-secondary">Files</span></h1>
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>#</th>
+            <th>File Name</th>
+            <th>Size</th>
+            <th>Creation Time</th>
+            <th>Last Write Time</th>
+            <th>Last Access Time</th>
+            <th>Path</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            var count = 1;
+            foreach (var file in Model.Files)
+            {
+                var path = $"{Model.Path}/{file.Name}".Replace("//", "/");
+                var displayPath = file.FullName;
+                if (displayPath.Length > 50)
+                    displayPath = displayPath[..50] + "..";
+                <tr>
+                    <td></td>
+                    <td>@count</td>
+                    <td>@file.Name</td>
+                    <td>@file.Length bytes</td>
+                    <td>@file.CreationTime</td>
+                    <td>@file.LastWriteTime</td>
+                    <td>@file.LastAccessTime</td>
+                    <td><a class="btn btn-primary" onclick="navigator.clipboard.writeText('@file.FullName.Replace("\\", "\\\\")')">@displayPath</a></td>
+                    <td><a class="btn btn-info" href="@path">Download</a></td>
+                </tr>
+                count++;
+            }
+        }
+        </tbody>
+    </table>
+}
+<div>
+            <a class="badge text-bg-info" href="@Model.ParentLink">..go to parent folder</a>
+</div>
